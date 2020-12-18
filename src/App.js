@@ -24,28 +24,60 @@ const intialError = {
 const initalPizzas = [];
 const initialDisabled = true;
 
+const schema = yup.object().shape({
+  name: yup
+    .string()
+    .required("Name is required")
+    .min(2, "Name must be at least 2 Characters"),
+  size: yup.string().oneOf(["small", "medium", "large"], "Please pick a size"),
+});
+
 const App = () => {
-  const [pizza, setPizza] = useState(initalPizzas);
+  const [pizzas, setPizzas] = useState(initalPizzas);
   const [formValues, setFormValues] = useState(initialForm);
   const [formErrors, setFormErrors] = useState(intialError);
   const [disabled, setDisabled] = useState(initialDisabled);
 
-  const postPizza = (newPizza) => {
-    axios
-      .post("fakeapi.com", newPizza)
-      .then((res) => {
-        setPizza([newPizza, ...pizza]);
-        setFormValues(initalPizzas);
+  const updateTopping = (inputName, inputValue) => {
+    yup
+      .reach(schema, inputName)
+      .validate(inputValue)
+      .then(() => {
+        setFormErrors({
+          ...formErrors,
+          [inputName]: "",
+        });
       })
       .catch((err) => {
-        debugger;
-        console.log(err);
+        setFormErrors({
+          ...formErrors,
+          [inputName]: err.errors[0],
+        });
       });
+
+    setFormValues({
+      ...formValues,
+      [inputName]: inputValue,
+    });
+  };
+
+  const submitTopping = () => {
+    const newPizza = {
+      name: formValues.name.trim(),
+      size: formValues.size.trim(),
+      special: formValues.special.trim(),
+      toppings: ["pepperoni", "cheese", "mushroom", "pineapple"].filter(
+        (topping) => formValues[topping]
+      ),
+    };
+    setPizzas(newPizza);
   };
 
   useEffect(() => {
-    axios.get("fakeapi.com").then((res) => setPizza(res.data));
-  }, []);
+    schema.isValid(formValues).then((valid) => {
+      setDisabled(!valid);
+    });
+  }, [formValues]);
 
   return (
     <>
@@ -59,10 +91,18 @@ const App = () => {
       {
         <Switch>
           <Route path="/pizza">
-            <Form />
+            <Form
+              values={formValues}
+              change={updateTopping}
+              submit={submitTopping}
+              disabled={disabled}
+              errors={formErrors}
+            />
           </Route>
           <Route path="/">
-            <Home />
+            {pizzas.map((pizza) => {
+              return <Home key={pizza.id} details={pizza} />;
+            })}
           </Route>
         </Switch>
       }
