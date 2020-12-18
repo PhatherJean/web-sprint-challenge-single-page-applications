@@ -89,6 +89,7 @@ const App = () => {
       ),
     };
     setPizzas(newPizza);
+    setFormValues(initialForm);
   };
 
   useEffect(() => {
@@ -104,8 +105,12 @@ const App = () => {
           <h1>Lambda Eats</h1>
           <p>Come one come all BEST PIZZA IN TOWN</p>
           <Link to="/">Home</Link>
-          <Link to="/pizza">Place your Order</Link>
-          <Link to="/summary">Review your Order</Link>
+          <Link className="place0" to="/pizza">
+            Place your Order
+          </Link>
+          <Link className="summary0" to="/summary">
+            Review your Order
+          </Link>
         </nav>
       </div>
       {
@@ -120,7 +125,7 @@ const App = () => {
             />
           </Route>
           <Route path="/summary">
-            <OrderSummary key={pizzas.id} details={formValues} />
+            <OrderSummary key={pizzas.id} details={pizzas} />
           </Route>
           <Route path="/">
             <Home />

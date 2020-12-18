@@ -1,4 +1,5 @@
 import React from "react";
+import OrderSummary from "./OrderSummary";
 
 export default function Form(props) {
   const { values, submit, change, disabled, errors } = props;
@@ -37,7 +38,12 @@ export default function Form(props) {
           <br></br>
           <label>
             Size:
-            <select onChange={onChange} value={values.size} name="size">
+            <select
+              className="pick_size"
+              onChange={onChange}
+              value={values.size}
+              name="size"
+            >
               <option value="">---Size---</option>
               <option value="small">Small</option>
               <option value="medium">Medium</option>
@@ -97,7 +103,9 @@ export default function Form(props) {
             />
           </label>
         </div>
-        <button disabled={disabled}>Order Now</button>
+        <button className="send" disabled={disabled}>
+          Order Now
+        </button>
       </div>
     </form>
   );
